@@ -76,7 +76,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     CameraPackage
 
-# Common kernel scripts
+# y
 PRODUCT_PACKAGES += \
     init.smurf.post_boot.sh \
     init.special_power.sh \
@@ -153,6 +153,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_BOOT_JARS += \
     telephony-ext
 
+# Spectrum
+PRODUCT_PACKAGES += \
+    init.spectrum.rc \
+    init.special_power.sh \
+    init.spectrum.sh
+
 # tri-state-key
 PRODUCT_PACKAGES += \
     tri-state-key_daemon
@@ -176,3 +182,8 @@ PRODUCT_PACKAGES_DEBUG += \
 # WFD
 PRODUCT_BOOT_JARS += \
     WfdCommon
+
+# loggy
+PRODUCT_PACKAGES += \
+    loggy.sh
+

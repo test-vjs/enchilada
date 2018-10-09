@@ -1,5 +1,4 @@
 LOCAL_PATH := $(call my-dir)
-ifeq ($(TARGET_DEVICE),$(filter $(TARGET_DEVICE),enchilada))
 include $(CLEAR_VARS)
 
 LOCAL_MODULE_TAGS := optional
@@ -15,5 +14,3 @@ LOCAL_PROGUARD_ENABLED := disabled
 LOCAL_DEX_PREOPT := false
 
 include $(BUILD_PACKAGE)
-
-endif
