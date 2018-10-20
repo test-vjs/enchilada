@@ -73,6 +73,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.data.iwlan.enable=true \
     persist.vendor.data.mode=concurrent
 
+# Rescue Party
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.disable_rescue=true
+
 # SSR
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.ssr.restart_level=ALL_ENABLE
