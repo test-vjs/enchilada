@@ -24,6 +24,7 @@
 #include <linux/kernel.h>
 #include <linux/proc_fs.h>
 #include <linux/hrtimer.h>
+#include <linux/pm_qos.h>
 #include <linux/proc_fs.h>
 #include <linux/interrupt.h>
 #include <linux/regulator/consumer.h>
@@ -552,6 +553,8 @@ struct synaptics_ts_data {
 	unsigned int fp_aod_cnt;
 	unsigned int unlock_succes;
 	int project_version;
+
+	struct pm_qos_request pm_qos_req;
 };
 
 static struct device_attribute attrs_oem[] = {
@@ -1932,6 +1935,10 @@ static void synaptics_ts_work_func(struct work_struct *work)
 	if( ts->enable_remote) {
 		goto END;
 	}
+
+	/* prevent CPU from entering deep sleep */
+	pm_qos_update_request(&ts->pm_qos_req, 100);
+
 	ret = synaptics_rmi4_i2c_write_byte(ts->client, 0xff, 0x00 );
 	ret = synaptics_rmi4_i2c_read_word(ts->client, F01_RMI_DATA_BASE);
 
@@ -1988,6 +1995,8 @@ static void synaptics_ts_work_func(struct work_struct *work)
 
 
 END:
+	pm_qos_update_request(&ts->pm_qos_req, PM_QOS_DEFAULT_VALUE);
+
 	//ret = set_changer_bit(ts);
 	touch_enable(ts);
 EXIT:
@@ -6165,6 +6174,46 @@ static int synaptics_ts_probe(struct i2c_client *client, const struct i2c_device
 	}
 #endif
 	init_synaptics_proc();
+#ifdef WAKE_GESTURES
+	gl_ts = ts;
+
+	gesture_dev = input_allocate_device();
+	if (!gesture_dev) {
+		pr_err("Can't allocate gesture device\n");
+		goto exit_init_failed;
+	}
+
+	gesture_dev->name = "wake_gesture";
+	gesture_dev->phys = "wake_gesture/input0";
+	input_set_capability(gesture_dev, EV_REL, WAKE_GESTURE);
+
+	ret = input_register_device(gesture_dev);
+	if (ret) {
+		pr_err("%s: input_register_device err=%d\n", __func__, ret);
+		goto err_gesture_dev;
+	}
+
+	android_touch_kobj = kobject_create_and_add("android_touch", NULL) ;
+	if (android_touch_kobj == NULL) {
+		pr_warn("%s: android_touch_kobj create_and_add failed\n", __func__);
+	}
+	ret = sysfs_create_file(android_touch_kobj, &dev_attr_sweep2wake.attr);
+	if (ret) {
+		pr_warn("%s: sysfs_create_file failed for sweep2wake\n", __func__);
+	}
+	ret = sysfs_create_file(android_touch_kobj, &dev_attr_doubletap2wake.attr);
+	if (ret) {
+		pr_warn("%s: sysfs_create_file failed for doubletap2wake\n", __func__);
+	}
+	ret = sysfs_create_file(android_touch_kobj, &dev_attr_wake_gestures.attr);
+	if (ret) {
+		pr_warn("%s: sysfs_create_file failed for wake_gestures\n", __func__);
+	}
+#endif
+
+	pm_qos_add_request(&ts->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
+		PM_QOS_DEFAULT_VALUE);
+
 	TPDTM_DMESG("synaptics_ts_probe 3203: normal end\n");
 
 	bootmode = get_boot_mode();
@@ -6236,6 +6285,9 @@ static int synaptics_ts_remove(struct i2c_client *client)
 	input_free_device(ts->input_dev);
 	kfree(ts);
 	tpd_power(ts,0);
+
+	pm_qos_remove_request(&ts->pm_qos_req);
+
 	return 0;
 }
 
