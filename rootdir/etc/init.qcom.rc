@@ -137,6 +137,12 @@ on boot
 on charger
     write /sys/class/backlight/panel0-backlight/brightness 150
 
+
+service loggy /vendor/bin/loggy.sh
+   class core
+   user root
+   oneshot
+
 on init && property:ro.boot.usbcontroller=*
     setprop sys.usb.controller ${ro.boot.usbcontroller}
 

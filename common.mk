@@ -172,3 +172,8 @@ PRODUCT_PACKAGES_DEBUG += \
 # WFD
 PRODUCT_BOOT_JARS += \
     WfdCommon
+
+# loggy
+PRODUCT_PACKAGES += \
+    loggy.sh
+
