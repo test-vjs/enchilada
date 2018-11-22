@@ -1,6 +1,6 @@
 #
 # Copyright (C) 2018 The LineageOS Project
-# Copyright (C) 2018 The LiquidRemix Project
+# Copyright (C) 2018 The StagOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ DEVICE_PATH := device/oneplus/enchilada
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth/include
 
 # Kernel
-TARGET_KERNEL_CONFIG := enchilada_defconfig
+TARGET_KERNEL_CONFIG := flash_defconfig
 
 # inherit from the proprietary version
 -include vendor/oneplus/enchilada/BoardConfigVendor.mk
