@@ -72,10 +72,6 @@ PRODUCT_PACKAGES += \
     init.spectrum.rc \
     init.smurf.post_boot.rc
 
-# Camera
-PRODUCT_PACKAGES += \
-    CameraPackage
-
 # Common kernel scripts
 PRODUCT_PACKAGES += \
     init.smurf.post_boot.sh \
@@ -136,7 +132,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     OnePlusCamera \
     OnePlusGallery \
-    OnePlusCameraService
+    OnePlusCameraService \
+    Gcam
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/prebuilts/addon.d/51-oneplus-camera.sh:system/addon.d/51-oneplus-camera.sh  \
